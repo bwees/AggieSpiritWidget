@@ -197,20 +197,22 @@ await buses.forEachAsyncParallel(async (bus) => {
     var following = []
 
     bus.stopIds.forEach((stopId) => {
-        if (!(typeof(table[nextTime[0]][stopId]) == 'string')) {
-            next.push(table[nextTime[0]][stopId])
-            
-            // verify there is a row after the nextTime[0]
-            if (table[nextTime[0]+1]) {
-                following.push(table[nextTime[0]+1][stopId])
-            }
-        } else {
-            if (table[nextTime[0]+1]) {
-                next.push(table[nextTime[0]+1][stopId])
-                // verify there is a row after the nextTime[0]+1
-                if (table[nextTime[0]+2]) {
-                    following.push(table[nextTime[0]+2][stopId])
-                }
+        var offset = 0
+        while (typeof(table[nextTime[0]+offset][stopId]) == 'string' && offset < 5) {
+            offset++
+        }
+
+        if (offset == 5) {
+            next.push("N/A")
+            following.push("N/A")
+            return
+        }
+
+        if (table[nextTime[0]+offset] && !(typeof(table[nextTime[0]+offset][stopId]) == 'string')) {
+            next.push(table[nextTime[0]+offset][stopId])
+            // verify there is a row after the nextTime[0]+1
+            if (table[nextTime[0]+offset+1]) {
+                following.push(table[nextTime[0]+offset+1][stopId])
             }
         }
     })
