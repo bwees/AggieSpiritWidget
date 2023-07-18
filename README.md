@@ -24,7 +24,7 @@
 <img width="59" alt="Screenshot 2023-07-18 at 3 42 49 PM" src="https://github.com/bwees/AggieSpiritWidget/assets/12686250/00277f34-6a7f-46f0-9247-dd50dea2cbf2">
 
 4. Open the bus and look at the timetable.
-5. You can choose up to 3 stops for your widget. Note the position from the left starting at 0 for each stop you want (look at the picture below for reference)
+5. You can choose up to 3 stops for your widget. Note the position from the left starting at 0 for each stop you want (look at the picture below for reference). The farthest column on the right CANNOT be used. It is covered with a yellow box in this example.
 
    <img width="542" alt="Screenshot 2023-07-18 at 3 41 26 PM" src="https://github.com/bwees/AggieSpiritWidget/assets/12686250/b4dea8cc-404d-4eae-9daa-4474c252fb75">
 
