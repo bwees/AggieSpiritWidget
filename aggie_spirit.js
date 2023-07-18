@@ -116,7 +116,7 @@ function timeBlock(parent, time, color) {
 // Seperate with & (ampersand)
 // Repeat for each bus, max 3 for large, 1 for Medium
 
-if (config.runsInApp) var busConfig = "07|1,2,3&12|3,2,4&08|0,1,2"
+if (config.runsInApp) var busConfig = "07|1,2,3&47-48|3,2,4&N15|0,1,2"
 if (config.runsInWidget) var busConfig = args.widgetParameter
 
 
@@ -176,7 +176,8 @@ await buses.forEachAsyncParallel(async (bus) => {
 
     
     if (tmpTable[0][0] == "No Service Is Scheduled For This Date") {
-        timetables[bus.busId] = "No Service"
+        timetables[bus.busId] = {next: ["No Service"], name: routeData.Name, color: routeData.Color, following: ["No Service"], stopNames: ["No Service"]}
+        return
     }
 
     var stopNames = tmpTable.shift()
@@ -227,17 +228,21 @@ const widget = new ListWidget()
 widget.backgroundColor = new Color("#1c1c1e")
 widget.setPadding(16, 16, 16, 16)
 
+console.log(timetables)
+
 buses.forEach((bus, x) => {
     var timetable = timetables[bus.busId]
 
+    
+    
     var busStack = widget.addStack()
     busStack.layoutVertically()
-
+    
     // TITLE
     var busTitle = busStack.addStack()
     busTitle.layoutHorizontally()
     busTitle.centerAlignContent()
-
+    
     // Colored Square
     var busColor = busTitle.addStack()
     busColor.backgroundColor = new Color(colorNameToHex(timetable.color))
@@ -245,23 +250,34 @@ buses.forEach((bus, x) => {
     busColor.setPadding(0, 0, 0, 0)
     busColor.size = new Size(28, 28)
     busColor.centerAlignContent()
-
+    
     var busNumber = busColor.addText(bus.busId)
     busNumber.font = Font.boldSystemFont(14)
+    busNumber.minimumScaleFactor = 0.5
     
     busTitle.addSpacer(8)
-
+    
     // Title
     var busName = busTitle.addText(timetable.name)
     busName.font = Font.boldSystemFont(16)
     busTitle.addSpacer()
-
+    
+    
+    
     // TABLE
-
     var table = busStack.addStack()
     table.layoutHorizontally()
     table.setPadding(0, 28, 0, 0)
     table.centerAlignContent()
+
+    if (timetable.next[0] == "No Service") {
+        table.addSpacer()
+        var noService = table.addText("No Service Scheduled for Today")
+        noService.font = Font.systemFont(14)
+        noService.textColor = Color.gray()
+        table.addSpacer()
+        return
+    }
 
     bus.stopIds.forEach((stopId, i) => {
         var next = timetable.next[i]
