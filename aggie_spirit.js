@@ -86,6 +86,7 @@ function timeBlock(parent, time, color) {
     let tb = tbMain.addStack()
     tb.centerAlignContent()
     tb.size = new Size(42, 18)
+
     tb.backgroundColor = color
     tb.cornerRadius = 5
     
@@ -116,7 +117,7 @@ function timeBlock(parent, time, color) {
 // Seperate with & (ampersand)
 // Repeat for each bus, max 3 for large, 1 for Medium
 
-if (config.runsInApp) var busConfig = "07|1,2,3&47-48|3,2,4&N15|0,1,2"
+if (config.runsInApp) var busConfig = "07|1,2,3&47-48|3,2,4&08|0"
 if (config.runsInWidget) var busConfig = args.widgetParameter
 
 
@@ -198,9 +199,21 @@ await buses.forEachAsyncParallel(async (bus) => {
     var following = []
 
     bus.stopIds.forEach((stopId) => {
+        // if table is empty
+        if (!nextTime) {
+            next.push("N/A")
+            following.push("N/A")
+            return
+        }
+
         var offset = 0
         while (typeof(table[nextTime[0]+offset][stopId]) == 'string' && offset < 5) {
             offset++
+            if (!(table[nextTime[0]+offset])) {
+                next.push("N/A")
+                following.push("N/A")
+                return
+            }
         }
 
         if (offset == 5) {
@@ -217,6 +230,12 @@ await buses.forEachAsyncParallel(async (bus) => {
             }
         }
     })
+
+    // if all times are "N/A" then the bus is not running
+    if (next.every((time) => time == "N/A")) {
+        next = ["No Service"]
+        following = ["No Service"]
+    }
    
     timetables[bus.busId] = {next: next, name: routeData.Name, color: routeData.Color, following: following, stopNames: stopNames}
     
@@ -236,6 +255,7 @@ buses.forEach((bus, x) => {
     
     
     var busStack = widget.addStack()
+    busStack.size = new Size(0, 90)
     busStack.layoutVertically()
     
     // TITLE
@@ -276,6 +296,7 @@ buses.forEach((bus, x) => {
         noService.font = Font.systemFont(14)
         noService.textColor = Color.gray()
         table.addSpacer()
+        busStack.addSpacer()
         return
     }
 
@@ -317,7 +338,7 @@ buses.forEach((bus, x) => {
     })
 
     if (x != buses.length-1) {
-        widget.addSpacer()
+        widget.addSpacer(8)
     }
 })
 
