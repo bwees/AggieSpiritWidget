@@ -12,6 +12,10 @@ function Time(hour, minute) {
     this.minute = minute
 }
 
+String.prototype.toTitleCase = function () {
+    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
+
 function decodeConfig(config) {
     var buses = config.split("&")
     var busConfigs = []
@@ -194,7 +198,6 @@ await buses.forEachAsyncParallel(async (bus) => {
         // append stop names to beginning of table
         tableArray.unshift(stopNames)
 
-        console.log(tableArray)
 
         tableArray
     `
@@ -220,7 +223,6 @@ await buses.forEachAsyncParallel(async (bus) => {
 
 
     var nextTime = findNextTime(table)
-    console.log(nextTime)
     var next = []
     var following = []
 
@@ -238,21 +240,17 @@ await buses.forEachAsyncParallel(async (bus) => {
             if (!(table[nextTime[0]+offset])) {
                 next.push("N/A")
                 following.push("N/A")
-                console.log("FIRST")
                 return
             }
         }
         
         if (offset == 5) {
-            console.log("SECOND")
             next.push("N/A")
             following.push("N/A")
             return
         }
         
         if (table[nextTime[0]+offset] && !(typeof(table[nextTime[0]+offset][stopId]) == 'string')) {
-            
-            console.log("THIRD")
             next.push(table[nextTime[0]+offset][stopId])
             // verify there is a row after the nextTime[0]+1
             if (table[nextTime[0]+offset+1]) {
@@ -270,9 +268,6 @@ await buses.forEachAsyncParallel(async (bus) => {
     timetables[bus.busId] = {next: next, name: busData[bus.busId].name, color: busData[bus.busId].color, following: following, stopNames: stopNames}
     
 })
-
-
-console.log(JSON.stringify(timetables))
 
 // DRAW WIDGET
 const widget = new ListWidget()
@@ -309,7 +304,7 @@ buses.forEach((bus, x) => {
     busTitle.addSpacer(8)
     
     // Title
-    var busName = busTitle.addText(timetable.name)
+    var busName = busTitle.addText(timetable.name.toTitleCase())
     busName.font = Font.boldSystemFont(16)
     busTitle.addSpacer()
     
