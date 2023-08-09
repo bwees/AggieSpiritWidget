@@ -14,7 +14,7 @@ function Time(hour, minute) {
 
 String.prototype.toTitleCase = function () {
     return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-};
+}
 
 function decodeConfig(config) {
     var buses = config.split("&")
@@ -38,15 +38,6 @@ function findNextTime(table) {
             }
         }
     }
-}
-
-function rgbToHex(color)
-{
-    var rgb = color.split("(")[1].split(")")[0].split(",")
-    var r = parseInt(rgb[0])
-    var g = parseInt(rgb[1])
-    var b = parseInt(rgb[2])
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
 }
 
 function timeBlock(parent, time, color) {
@@ -82,52 +73,11 @@ function timeBlock(parent, time, color) {
     tbMain.addSpacer()
 }
 
-async function getAPIKey() {
-    var aKey = new Request("https://transport.tamu.edu/busroutes.web/BusTimes")
-    await aKey.load()
-
-    return "Bearer " + aKey.response.cookies.filter(cookie => cookie.name == "access_token")[0].value
-}
-
-function getTodayString() {
-    var df = new DateFormatter()
-    df.dateFormat = "yyyy-MM-dd"
-    return df.string(new Date())
-}
-
 async function getBusData() {
-    var wv = new WebView()
-    await wv.loadURL("https://transport.tamu.edu/busroutes.web/")
-
-    var js = `
-        var busData = {}
-
-        var allBusses = document.getElementById("all")
-
-        var numbers = allBusses.getElementsByClassName("route-number")
-        var names = allBusses.getElementsByClassName("route-text")
-        var filtered_names = []
-        for (var i = 0; i < names.length; i++) {
-            if (!names[i].classList.contains("route-number")) {
-                filtered_names.push(names[i].innerText)
-            }
-        }
-
-        for (var i = 0; i < numbers.length; i++) {
-            busData[numbers[i].innerText] = {
-                name: filtered_names[i],
-                color: numbers[i].style.backgroundColor
-            }
-        }
-        busData
-    `
-
-    var busData = await wv.evaluateJavaScript(js)
-    return busData
+    return await new Request("https://raw.githubusercontent.com/bwees/AggieSpiritWidget/scraper/data.json").loadJSON()
 }
 
-var apiKey = await getAPIKey()
-var busData = await getBusData()
+var bussesData = await getBusData()
 
 // GET DATA
 // Bus Config Format
@@ -157,20 +107,22 @@ if (config.widgetFamily == "large" || config.runsInApp) {
 var timetables = {}
 
 await buses.forEachAsyncParallel(async (bus) => {
-    // load the URL into a webview
-    const rq = new Request('https://tsapp.transport.tamu.edu/busroutes.api/api/route/' + bus.busId + '/TimeTable/' + getTodayString())
-    rq.headers = {"Authorization": apiKey}
+    // // load the URL into a webview
+    // const rq = new Request('https://tsapp.transport.tamu.edu/busroutes.api/api/route/' + bus.busId + '/TimeTable/' + getTodayString())
+    // rq.headers = {"Authorization": apiKey}
 
-    var tableData = (await rq.loadJSON()).jsonTimeTableList
+    // var tableData = (await rq.loadJSON()).jsonTimeTableList
+    var busData = bussesData[bus.busId]
+    var busTable = busData.routes[bus.switchPos].html
 
     // If the time table is empty
-    if (tableData[0].html.includes("No Service Is Scheduled For This Date")) {
-        timetables[bus.busId] = {next: ["No Service"], name: busData[bus.busId].name, color: busData[bus.busId].color, following: ["No Service"], stopNames: ["No Service"]}
+    if (busTable.includes("No Service Is Scheduled For This Date")) {
+        timetables[bus.busId] = {next: ["No Service"], name: busData.name, color: busData.color, following: ["No Service"], stopNames: ["No Service"]}
         return
     }
     
     
-    var timetable = "<table>" + tableData[bus.switchPos].html + "</table>"
+    var timetable = "<table>" + busTable + "</table>"
 
 
     var wv = new WebView()
@@ -265,7 +217,7 @@ await buses.forEachAsyncParallel(async (bus) => {
         following = ["No Service"]
     }
    
-    timetables[bus.busId] = {next: next, name: busData[bus.busId].name, color: busData[bus.busId].color, following: following, stopNames: stopNames}
+    timetables[bus.busId] = {next: next, name: busData.name, color: busData.color, following: following, stopNames: stopNames}
     
 })
 
@@ -278,8 +230,6 @@ widget.setPadding(16, 16, 16, 16)
 buses.forEach((bus, x) => {
     var timetable = timetables[bus.busId]
 
-    
-    
     var busStack = widget.addStack()
     busStack.size = new Size(0, 90)
     busStack.layoutVertically()
@@ -291,7 +241,7 @@ buses.forEach((bus, x) => {
     
     // Colored Square
     var busColor = busTitle.addStack()
-    busColor.backgroundColor = new Color(rgbToHex(timetable.color))
+    busColor.backgroundColor = new Color(timetable.color)
     busColor.cornerRadius = 4
     busColor.setPadding(0, 0, 0, 0)
     busColor.size = new Size(28, 28)
