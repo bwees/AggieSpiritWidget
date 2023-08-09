@@ -2,7 +2,7 @@ name: Bus Scrape
 
 on:
   push:
-    branches: [ main ]
+    branches: [ scraper ]
 
 jobs:
   scrape:
@@ -14,6 +14,23 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
-      - run: npm install
-      - run: npm run scrape
+          node-version: 20.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Scrape
+        run: npm run scrape
+
+      - name: Git Config
+        run: |
+          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+
+      - name: commit
+        run: |
+          git add data.json
+          git commit -m "New Scrape Data"
+          git push origin scrape
+    
