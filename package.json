@@ -1,0 +1,15 @@
+{
+  "name": "aggiespiritwidget",
+  "main": "scraper.js",
+  "keywords": [],
+  "author": "bwees",
+  "dependencies": {
+    "dom-parser": "^0.1.6",
+    "eventsource": "^2.0.2",
+    "node-fetch": "^3.3.2"
+  },
+  "scripts": {
+    "start": "node --openssl-config=openssl.cnf scraper.js"
+  },
+  "type": "module"
+}
