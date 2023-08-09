@@ -31,6 +31,8 @@ jobs:
       - name: commit
         run: |
           git add data.json
-          git commit -m "New Scrape Data"
-          git push origin scrape
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "New Scrape Data"
+            git push origin scraper
+          fi
     
