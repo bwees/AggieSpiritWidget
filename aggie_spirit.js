@@ -233,6 +233,7 @@ buses.forEach((bus, x) => {
     var busStack = widget.addStack()
     busStack.size = new Size(0, 90)
     busStack.layoutVertically()
+    busStack.url = "https://transport.tamu.edu/busroutes.web/Routes?r=" + bus.busId
     
     // TITLE
     var busTitle = busStack.addStack()
