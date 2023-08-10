@@ -1,0 +1,43 @@
+name: Bus Scrape
+
+on:
+  schedule:
+    - cron: '15 */6 * * *'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: "scraper"
+          
+      - uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: "America/Chicago"
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Scrape
+        run: npm start
+
+      - name: Git Config
+        run: |
+          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+
+      - name: commit
+        run: |
+          git add data.json
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "New Scrape Data"
+            git push origin scraper
+          fi
+    
