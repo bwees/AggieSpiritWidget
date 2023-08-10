@@ -40,4 +40,14 @@ jobs:
             git commit -m "New Scrape Data"
             git push origin scraper
           fi
-    
+  ping-success:
+    runs-on: ubuntu-latest
+    needs: [scrape]
+    steps:
+      - run: curl -m 10 --retry 5 ${{ secrets.HEALTHCHECKS_URL }}
+  ping-failure:
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    needs: [scrape]
+    steps:
+      - run: curl -m 10 --retry 5 ${{ secrets.HEALTHCHECKS_URL }}/fail
