@@ -6,6 +6,8 @@ import fetch from "node-fetch"
 import DomParser from "dom-parser"
 import fs from "fs"
 
+process.env.TZ = "America/Chicago"
+
 async function getBusses() {
     // extract all option tags from the dropdown with id "routeSelect" and make an array of the value attribute
     // from node js with a fetch
