@@ -3,7 +3,8 @@ name: Bus Scrape
 on:
   schedule:
     - cron: '13 */2 * * *'
-
+  workflow_dispatch:
+  
 jobs:
   scrape:
     runs-on: ubuntu-latest
