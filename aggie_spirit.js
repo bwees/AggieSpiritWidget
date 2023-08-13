@@ -113,6 +113,8 @@ await buses.forEachAsyncParallel(async (bus) => {
 
     // var tableData = (await rq.loadJSON()).jsonTimeTableList
     var busData = bussesData[bus.busId]
+    
+    if (busData.routes.length == 1) bus.switchPos = 0
     var busTable = busData.routes[bus.switchPos].html
 
     // If the time table is empty
