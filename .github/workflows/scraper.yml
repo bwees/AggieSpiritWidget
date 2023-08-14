@@ -29,14 +29,6 @@ jobs:
           # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
-
-      - name: commit
-        run: |
-          git add data.json
-          if ! git diff-index --quiet HEAD; then
-            git commit -m "New Scrape Data"
-            git push origin scraper
-          fi
           
       - name: deploy-gist
         uses: exuanbo/actions-deploy-gist@v1
