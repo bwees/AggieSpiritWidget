@@ -1,7 +1,3 @@
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: red; icon-glyph: bus;
-// 
 
 Array.prototype.forEachAsyncParallel = async function (fn) {
     await Promise.all(this.map(fn));
@@ -74,7 +70,7 @@ function timeBlock(parent, time, color) {
 }
 
 async function getBusData() {
-    return await new Request("https://raw.githubusercontent.com/bwees/AggieSpiritWidget/scraper/data.json").loadJSON()
+    return await new Request("https://gist.githubusercontent.com/bwees/4e75c40adb4806b4db688ddb550a727f/raw/f039a9c07a2dcefe8f57b2bd1584bda2567f5616/data.json").loadJSON()
 }
 
 async function main() {
