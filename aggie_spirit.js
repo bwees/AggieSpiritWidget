@@ -255,7 +255,7 @@ async function main() {
         busTitle.addSpacer(8)
         
         // Title
-        var busName = busTitle.addText(timetable.name.toTitleCase())
+        var busName = busTitle.addText(timetable.name)
         busName.font = Font.boldSystemFont(16)
         busTitle.addSpacer()
         
