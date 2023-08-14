@@ -1,12 +1,14 @@
 # Aggie Spirit iOS Widget
 
+
+
 <img width="256" alt="Screenshot 2023-07-18 at 3 33 59 PM" src="https://github.com/bwees/AggieSpiritWidget/assets/12686250/5bc4fd82-db89-4a51-89c5-8fcbf6b62ce0">
 
-#### ⚠️⚠️ Instructions below may contain outdated information in the pictures, but the concepts still apply.
+#### ⚠️⚠️ If the widget does not work, please update the code found [here](https://raw.githubusercontent.com/bwees/AggieSpiritWidget/main/main.js)
 
 # Installation Steps:
 1. Install the [Scriptable App](https://scriptable.app/)
-2. Copy the code found [here](https://raw.githubusercontent.com/bwees/AggieSpiritWidget/main/aggie_spirit.js)
+2. Copy the code found [here](https://raw.githubusercontent.com/bwees/AggieSpiritWidget/main/main.js)
 4. Open the Scriptable app and tap the + icon at the upper-left corner of the screen.
 5. Paste the code inside the blank area.
 6. Tap the name at the top, normally called Untitled Script, then change it to whatever name you want
