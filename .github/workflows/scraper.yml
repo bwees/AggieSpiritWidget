@@ -37,6 +37,15 @@ jobs:
             git commit -m "New Scrape Data"
             git push origin scraper
           fi
+          
+      - name: deploy-gist
+        uses: exuanbo/actions-deploy-gist@v1
+        with:
+          token: ${{ secrets.GIST_TOKEN }}
+          gist_id: 4e75c40adb4806b4db688ddb550a727f
+          file_path: data.json
+          file_type: text
+
   ping-success:
     runs-on: ubuntu-latest
     needs: [scrape]
