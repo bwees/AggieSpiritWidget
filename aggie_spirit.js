@@ -70,7 +70,7 @@ function timeBlock(parent, time, color) {
 }
 
 async function getBusData() {
-    return await new Request("https://gist.githubusercontent.com/bwees/4e75c40adb4806b4db688ddb550a727f/raw/f039a9c07a2dcefe8f57b2bd1584bda2567f5616/data.json").loadJSON()
+    return await new Request("https://gist.githubusercontent.com/bwees/4e75c40adb4806b4db688ddb550a727f/raw/data.json").loadJSON()
 }
 
 async function main() {
@@ -154,8 +154,7 @@ async function main() {
             tableArray
         `
 
-        var tmpTable = await wv.evaluateJavaScript(js)
-        
+        var tmpTable = await wv.evaluateJavaScript(js)        
         var stopNames = tmpTable.shift()
         
         // convert to Time objects, keep 2d array structure
