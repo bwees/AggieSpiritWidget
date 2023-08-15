@@ -111,8 +111,8 @@ async function getBusData(busses) {
         // if it has been 5 seconds, resend requests that have not been answered
         if (new Date().getTime() - startTime > 5000) {
             console.log("Resending requests")
-            for (const bus of Object.keys(busData)) {
-                if (!busData[bus].routes) {
+            for (const bus of Object.keys(busses)) {
+                if (!busses[bus].routes) {
                     await fetch(hubEndpoint, {method: 'POST', body: `{"arguments":["${bus}", "${date}"],"invocationId":"${bus}","target":"GetTimeTable","type":1}`})
                     // delay 250ms
                     await new Promise(r => setTimeout(r, 250))
