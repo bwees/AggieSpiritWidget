@@ -4,7 +4,7 @@
 
 <img width="256" alt="Screenshot 2023-07-18 at 3 33 59 PM" src="https://github.com/bwees/AggieSpiritWidget/assets/12686250/5bc4fd82-db89-4a51-89c5-8fcbf6b62ce0">
 
-#### ⚠️⚠️ If the widget does not work, please update the code found [here](https://raw.githubusercontent.com/bwees/AggieSpiritWidget/main/main.js)
+#### ⚠️⚠️ If the widget does not work, please update the widget using the following [instructions](https://github.com/bwees/AggieSpiritWidget/issues/1#issuecomment-1671937635)
 
 # Installation Steps:
 1. Install the [Scriptable App](https://scriptable.app/)
