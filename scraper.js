@@ -5,13 +5,14 @@ import EventSource from "eventsource"
 import fetch from "node-fetch"
 import DomParser from "dom-parser"
 import fs from "fs"
-
-process.env.TZ = "America/Chicago"
+import moment from "moment-timezone"
 
 async function getBusses() {
     // extract all option tags from the dropdown with id "routeSelect" and make an array of the value attribute
     // from node js with a fetch
-    const response = await fetch('https://transport.tamu.edu/busroutes.web')
+    const response = await fetch('https://transport.tamu.edu/busroutes.web', {
+        signal: AbortSignal.timeout( 10000 ),
+      })
     const html = await response.text()
 
     const parser = new DomParser()
@@ -88,7 +89,8 @@ async function getBusData(busses) {
         await fetch(hubEndpoint, {method: 'POST', body: `{"type":6}`})
     }, 5000)
 
-    var date = new Date().toISOString().slice(0, 10)
+
+    var date = moment().tz("America/Chicago").format("YYYY-MM-DD")
 
     // send request for each bus
     for (const bus of Object.keys(busses)) {
@@ -96,13 +98,8 @@ async function getBusData(busses) {
         // delay 100ms
         await new Promise(r => setTimeout(r, 250))
     }
-    // const bus = await fetch(hubEndpoint, {method: 'POST', body: `{"arguments":["01","2023-08-09"],"invocationId":"0","target":"GetTimeTable","type":1}`})
-
     
     // wait 15 seconds
-
-    console.log("Waiting for data")
-
     var startTime = new Date().getTime()
     var masterTime = new Date().getTime()
 
