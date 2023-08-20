@@ -28,6 +28,9 @@ async function getBusses() {
 
     for (var i = 0; i < names.length; i++) {
         if (!names[i].getAttribute("class").includes("route-number")) {
+            // convert &amp; to &
+            names[i].textContent = names[i].textContent.replace(/&amp;/g, "&")
+            
             filtered_names.push(names[i].textContent)
         }
     }
