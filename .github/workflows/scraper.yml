@@ -1,8 +1,8 @@
 name: Bus Scrape
 
 on:
-  # schedule:
-  #   - cron: '13 */6 * * *'
+  schedule:
+    - cron: '13 */6 * * *'
   workflow_dispatch:
   
 jobs:
