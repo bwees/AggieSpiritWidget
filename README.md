@@ -1,7 +1,5 @@
 # Aggie Spirit iOS Widget
 
-## TAMU's Website is currently broken and they have replaced the timetables with PDFs. This widget will not function until they restore the website.
-
 
 <img width="256" alt="Screenshot 2023-07-18 at 3 33 59 PM" src="https://github.com/bwees/AggieSpiritWidget/assets/12686250/5bc4fd82-db89-4a51-89c5-8fcbf6b62ce0">
 
