@@ -1,3 +1,6 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: deep-brown; icon-glyph: magic;
 
 Array.prototype.forEachAsyncParallel = async function (fn) {
     await Promise.all(this.map(fn));
@@ -73,6 +76,42 @@ async function getBusData() {
     return await new Request("https://gist.githubusercontent.com/bwees/4e75c40adb4806b4db688ddb550a727f/raw/data.json").loadJSON()
 }
 
+async function parseTable(busTableHTML) {
+    var tableHTMLWrapped = "<table>" + busTableHTML + "</table>"
+
+
+    var wv = new WebView()
+    wv.loadHTML(tableHTMLWrapped)
+    await wv.waitForLoad()
+
+    let js = `
+        const table = document.getElementsByTagName("table")[0]
+        var now = new Date()
+
+        var tableArray = Array.from(table.rows).map((row) => Array.from(row.cells).map((cell) => {
+            if (cell.firstChild) {
+                var leaveTime = new Date(cell.firstChild.dateTime);
+                if (leaveTime < now) {
+                    return "Past"
+                }
+            }
+            return (cell.firstChild) ? leaveTime : cell.innerText
+        }))
+        tableArray.shift()
+
+        // get stop names from tHead
+        var stopNames = Array.from(table.tHead.rows[0].cells).map((cell) => cell.innerText)
+
+        // append stop names to beginning of table
+        tableArray.unshift(stopNames)
+
+        
+        tableArray
+    `
+
+    return await wv.evaluateJavaScript(js)
+}
+
 async function main() {
 
     var bussesData = await getBusData()
@@ -87,7 +126,7 @@ async function main() {
     // Seperate with & (ampersand)
     // Repeat for each bus, max 3 for large, 1 for Medium
 
-    if (config.runsInApp) var busConfig = "07,L|0,1"//&12,R|0,1,2&08,R|0,1"
+    if (config.runsInApp) var busConfig = "47,L|0,0R"//&12,R|0,1,2&08,R|0,1"
     if (config.runsInWidget) var busConfig = args.widgetParameter
 
 
@@ -102,14 +141,10 @@ async function main() {
     }
 
 
+
     var timetables = {}
 
     await buses.forEachAsyncParallel(async (bus) => {
-        // // load the URL into a webview
-        // const rq = new Request('https://tsapp.transport.tamu.edu/busroutes.api/api/route/' + bus.busId + '/TimeTable/' + getTodayString())
-        // rq.headers = {"Authorization": apiKey}
-
-        // var tableData = (await rq.loadJSON()).jsonTimeTableList
         var busData = bussesData[bus.busId]
         
         if (busData.routes.length == 1) bus.switchPos = 0
@@ -121,40 +156,7 @@ async function main() {
             return
         }
         
-        
-        var timetable = "<table>" + busTable + "</table>"
-
-
-        var wv = new WebView()
-        wv.loadHTML(timetable)
-        await wv.waitForLoad()
-
-        let js = `
-            const table = document.getElementsByTagName("table")[0]
-            var now = new Date()
-
-            var tableArray = Array.from(table.rows).map((row) => Array.from(row.cells).map((cell) => {
-                if (cell.firstChild) {
-                    var leaveTime = new Date(cell.firstChild.dateTime);
-                    if (leaveTime < now) {
-                        return "Past"
-                    }
-                }
-                return (cell.firstChild) ? leaveTime : cell.innerText
-            }))
-            tableArray.shift()
-
-            // get stop names from tHead
-            var stopNames = Array.from(table.tHead.rows[0].cells).map((cell) => cell.innerText)
-
-            // append stop names to beginning of table
-            tableArray.unshift(stopNames)
-
-
-            tableArray
-        `
-
-        var tmpTable = await wv.evaluateJavaScript(js)        
+        var tmpTable = await parseTable(busTable)        
         var stopNames = tmpTable.shift()
         
         // convert to Time objects, keep 2d array structure
@@ -176,8 +178,70 @@ async function main() {
         var nextTime = findNextTime(table)
         var next = []
         var following = []
+        var otherStops = []
+        
+        await bus.stopIds.forEachAsyncParallel(async (stopId) => {
+            // This is handling the case where user wants to show stop from other timetable
+            if (stopId.includes("L") || stopId.includes("R")) {
+                var s = stopId.includes("L") ? 0 : 1
+                var otherTime = busData.routes[s].html
 
-        bus.stopIds.forEach((stopId) => {
+                stopId = stopId.charAt(0)
+                
+                var otherTmpTable = await parseTable(otherTime)
+                otherStops = [...otherTmpTable.shift()]
+                var otherNextTime = findNextTime(otherTmpTable)
+
+                // convert to Time objects, keep 2d array structure
+                var otherTable = otherTmpTable.map((row) => row.map((cell) => {
+                    if (cell != "Past") {
+                        var t = new Date(cell)
+                        
+                        if (t.toString() == "Invalid Date") {
+                            return "Past"
+                        }
+                        
+                        return new Time(t.getHours(), t.getMinutes())
+                    } else {
+                        return "Past"
+                    }
+                }))
+                
+                                
+                // if otherTable is empty
+                if (!otherNextTime) {
+                    next.push("N/A")
+                    following.push("N/A")
+                    return
+                }
+                
+                var offset = 0
+                while (typeof(otherTable[otherNextTime[0]+offset][stopId]) == 'string' && offset < 5) {
+                    offset++
+                    if (!(otherTable[otherNextTime[0]+offset])) {
+                        next.push("N/A")
+                        following.push("N/A")
+                        return
+                    }
+                }
+                
+                if (offset == 5) {
+                    next.push("N/A")
+                    following.push("N/A")
+                    return
+                }
+                
+                if (otherTable[otherNextTime[0]+offset] && !(typeof(otherTable[otherNextTime[0]+offset][stopId]) == 'string')) {
+                    next.push(otherTable[otherNextTime[0]+offset][stopId])
+                    // verify there is a row after the otherNextTime[0]+1
+                    if (otherTable[otherNextTime[0]+offset+1]) {
+                        following.push(otherTable[otherNextTime[0]+offset+1][stopId])
+                    }
+                }
+                
+                return
+            } 
+    
             // if table is empty
             if (!nextTime) {
                 next.push("N/A")
@@ -216,9 +280,10 @@ async function main() {
             following = ["No Service"]
         }
     
-        timetables[bus.busId] = {next: next, name: busData.name, color: busData.color, following: following, stopNames: stopNames}
+        timetables[bus.busId] = {next: next, name: busData.name, color: busData.color, following: following, stopNames: stopNames, otherStops: otherStops}
         
     })
+
 
     // DRAW WIDGET
     const widget = new ListWidget()
@@ -291,7 +356,12 @@ async function main() {
             stopNameStack.centerAlignContent()
 
             stopNameStack.addSpacer()
-            var stopName = stopNameStack.addText(timetable.stopNames[stopId])
+            var stopName
+            if (stopId.includes("L") || stopId.includes("R")) {
+                stopName = stopNameStack.addText(timetable.otherStops[stopId.charAt(0)])
+            } else {
+                stopName = stopNameStack.addText(timetable.stopNames[stopId])
+            }
             stopName.centerAlignText()
             stopName.font = Font.systemFont(12)
             stopName.textColor = new Color("#BCBCC2")
