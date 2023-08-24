@@ -38,7 +38,7 @@
 <img width="1331" alt="Screenshot 2023-08-02 at 3 29 26 PM" src="https://github.com/bwees/AggieSpiritWidget/assets/12686250/7e625837-3c0f-48a6-87ed-6de76799fb5b">
 
 7. In this example, we are going to use Trigon, Munson, and Ashburn so our positions would be 0, 1, and 5
-8. Repeat steps 1-6 in this section for up to 3 buses. You should have information like the table below.
+8. Repeat steps 1-6 in this section for up to 3 buses. You should have information like the table below. If you would like to switch to the other schedule (L or R) for a single stop, you can add a L or R to the end of the stop position number.
    
 | Bus | Stops   | Switch Direction |
 |-----|---------|------------------|
