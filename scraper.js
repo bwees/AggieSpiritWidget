@@ -28,7 +28,7 @@ async function getBusses() {
 
     var busData = {}
 
-    var allBusses = document.getElementById("all")
+    var allBusses = document.getElementById("myTabContent")
 
     if (allBusses == null) {
         console.log(html)
@@ -101,7 +101,6 @@ async function getTimetableData(busses) {
         const dataString = event.data.trim().slice(0, -1)
         
         const data = JSON.parse(dataString)
-        console.log(data)
         if (data.type == 3 && data.result) {
             console.log("Received data for bus " + data.invocationId )
             busses[data.invocationId].routes = data.result.jsonTimeTableList
