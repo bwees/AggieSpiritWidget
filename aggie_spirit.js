@@ -146,7 +146,12 @@ async function main() {
 
     await buses.forEachAsyncParallel(async (bus) => {
         var busData = bussesData[bus.busId]
-        
+
+        if (!busData) {
+            timetables[bus.busId] = {error: "Bus Not Found"}
+            return
+        }
+
         if (busData.routes.length == 1) bus.switchPos = 0
         var busTable = busData.routes[bus.switchPos].html
 
@@ -294,10 +299,54 @@ async function main() {
     buses.forEach((bus, x) => {
         var timetable = timetables[bus.busId]
 
+        
         var busStack = widget.addStack()
         busStack.size = new Size(0, 90)
         busStack.layoutVertically()
         busStack.url = "https://transport.tamu.edu/busroutes.web/Routes?r=" + bus.busId
+
+        if (timetable.error) {
+            // TITLE
+            var busTitle = busStack.addStack()
+            busTitle.layoutHorizontally()
+            busTitle.centerAlignContent()
+            
+            // Colored Square
+            var busColor = busTitle.addStack()
+            busColor.backgroundColor = new Color("#333333")
+            busColor.cornerRadius = 4
+            busColor.setPadding(0, 0, 0, 0)
+            busColor.size = new Size(28, 28)
+            busColor.centerAlignContent()
+            
+            var busNumber = busColor.addText(bus.busId)
+            busNumber.font = Font.boldSystemFont(14)
+            busNumber.minimumScaleFactor = 0.5
+            
+            busTitle.addSpacer(8)
+            
+            // Title
+            var busName = busTitle.addText("Bus Not Available")
+            busName.font = Font.boldSystemFont(16)
+            busTitle.addSpacer()
+            
+
+            var table = busStack.addStack()
+            table.layoutHorizontally()
+            table.setPadding(0, 28, 0, 0)
+            table.centerAlignContent()
+            
+            table.addSpacer()
+            var noService = table.addText("Check your configuration if you believe this is an error.")
+            noService.centerAlignText()
+            noService.font = Font.systemFont(14)
+            noService.textColor = Color.gray()
+            table.addSpacer()
+            busStack.addSpacer()
+            return
+
+            return
+        }
         
         // TITLE
         var busTitle = busStack.addStack()
