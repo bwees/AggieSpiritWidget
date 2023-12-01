@@ -10,6 +10,9 @@ import moment from "moment-timezone"
 const ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
 var tsessionID = ""
 
+// ssl crap
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+
 async function getBusses() {
     // extract all option tags from the dropdown with id "routeSelect" and make an array of the value attribute
     // from node js with a fetch
