@@ -1,9 +1,11 @@
 # Aggie Spirit iOS Widget
 
+#### ⚠️⚠️ I am no longer actively developing this widget in favor of developing a standalone app. This widget will no longer receive updates and will likely break once TAMU switches to their new API. I will continue to run the caching component but will not update it once the API breaks.
+
+
 
 <img width="256" alt="Screenshot 2023-07-18 at 3 33 59 PM" src="https://github.com/bwees/AggieSpiritWidget/assets/12686250/5bc4fd82-db89-4a51-89c5-8fcbf6b62ce0">
 
-#### ⚠️⚠️ If the widget does not work, please update the widget using the following [instructions](https://github.com/bwees/AggieSpiritWidget/issues/1#issuecomment-1671937635)
 
 # Installation Steps:
 1. Install the [Scriptable App](https://scriptable.app/)
