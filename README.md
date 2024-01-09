@@ -1,6 +1,6 @@
 # Aggie Spirit iOS Widget
 
-#### ⚠️⚠️ I am no longer actively developing this widget in favor of developing a standalone app. This widget will no longer receive updates and will likely break once TAMU switches to their new API. I will continue to run the caching component but will not update it once the API breaks.
+#### ⚠️⚠️ This widget is no longer developed and its source data is no longer updated. I am working on a standalone app. Check it out and give it a ⭐! https://github.com/pavitgopal/ReveilleRides
 
 
 
